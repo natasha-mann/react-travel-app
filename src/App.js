@@ -1,10 +1,11 @@
 import logo from "./logo.svg";
 import "./App.css";
+import Header from "./components/Header";
 
 function App() {
   return (
     <div>
-      <div className="border header">Header</div>
+      <Header title="Travel Companion" />
       {/* <div className="row main g-0">
         <div className="border col-sm-12 col-md-4">Country Card</div>
         <div className="border col-sm-12 col-md-8">

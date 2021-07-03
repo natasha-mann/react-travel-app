@@ -8,6 +8,8 @@
 
 .header {
   min-height: 15vh;
+  background-color: var(--prussian-blue);
+  color: white;
 }
 
 .main {
