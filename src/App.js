@@ -3,6 +3,8 @@ import Header from "./components/Header";
 import SearchForm from "./components/SearchForm";
 import { Component } from "react";
 
+import fetchData from "./utils/fetchData";
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -12,8 +14,14 @@ class App extends Component {
     };
   }
 
-  onSubmit = (event) => {
+  onSubmit = async (event) => {
     event.preventDefault();
+
+    const { data, error } = await fetchData(
+      `https://restcountries.eu/rest/v2/name/${this.state.countryName}`
+    );
+
+    console.log(data, error);
   };
 
   onChange = (event) => {
