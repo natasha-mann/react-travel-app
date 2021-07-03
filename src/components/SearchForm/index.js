@@ -1,6 +1,6 @@
 const SearchForm = (props) => {
   return (
-    <div className="position-absolute top-50 start-50 translate-middle p-5 search-container">
+    <div className={props.className}>
       <form onSubmit={props.onSubmit}>
         <h2 className="pb-3">{props.text}</h2>
         <div className="input-group my-4">

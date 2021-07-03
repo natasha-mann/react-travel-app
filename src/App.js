@@ -13,12 +13,17 @@ class App extends Component {
       countryName: "",
       data: null,
       error: null,
-      isLoading: true,
+      isLoading: false,
+      firstSearch: true,
     };
   }
 
   onSubmit = async (event) => {
     event.preventDefault();
+
+    this.setState({
+      isLoading: true,
+    });
 
     const { data, error } = await fetchData(
       `https://restcountries.eu/rest/v2/name/${this.state.countryName}`
@@ -29,6 +34,7 @@ class App extends Component {
         data,
         error: null,
         isLoading: false,
+        firstSearch: false,
       });
     }
 
@@ -37,6 +43,7 @@ class App extends Component {
         error,
         data: null,
         isLoading: false,
+        firstSearch: false,
       });
     }
   };
@@ -47,25 +54,53 @@ class App extends Component {
     });
   };
 
+  renderCurrentCard() {
+    const { data, error, isLoading } = this.state;
+
+    if (data && !isLoading && !error) {
+      return (
+        <div className="row main g-0">
+          <div className="border col-sm-12 col-md-4">
+            <SearchForm
+              className="p-3"
+              placeholder="Enter a country"
+              onSubmit={this.onSubmit}
+              onChange={this.onChange}
+            />
+            <div>Country Card</div>
+          </div>
+          <div className="border col-sm-12 col-md-8">
+            <div className="border weather">Weather Card</div>
+            <div className="border health">Health Card</div>
+          </div>
+        </div>
+      );
+    } else if (!data && !isLoading && error) {
+      // return <ErrorCard message={error} />;
+      return <div>Error</div>;
+    } else if (isLoading) {
+      // return <LoadingSpinner />;
+      return <div>Loading</div>;
+    }
+  }
+
   render() {
     return (
       <div>
         <Header title="Travel Companion" />
-        {/* <div className="row main g-0">
-    <div className="border col-sm-12 col-md-4">Country Card</div>
-    <div className="border col-sm-12 col-md-8">
-      <div className="border weather">Weather Card</div>
-      <div className="border health">Health Card</div>
-    </div>
-  </div> */}
 
-        <SearchForm
-          text="Where would you like to go?"
-          placeholder="Enter a country"
-          onSubmit={this.onSubmit}
-          onChange={this.onChange}
-          value={this.state.countryName}
-        />
+        {this.state.firstSearch && (
+          <SearchForm
+            className="position-absolute top-50 start-50 translate-middle p-5 search-container"
+            text="Where would you like to go?"
+            placeholder="Enter a country"
+            onSubmit={this.onSubmit}
+            onChange={this.onChange}
+            value={this.state.countryName}
+          />
+        )}
+
+        {this.renderCurrentCard()}
       </div>
     );
   }
