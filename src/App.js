@@ -11,6 +11,9 @@ class App extends Component {
 
     this.state = {
       countryName: "",
+      data: null,
+      error: null,
+      isLoading: true,
     };
   }
 
@@ -21,7 +24,21 @@ class App extends Component {
       `https://restcountries.eu/rest/v2/name/${this.state.countryName}`
     );
 
-    console.log(data, error);
+    if (data) {
+      this.setState({
+        data,
+        error: null,
+        isLoading: false,
+      });
+    }
+
+    if (error) {
+      this.setState({
+        error,
+        data: null,
+        isLoading: false,
+      });
+    }
   };
 
   onChange = (event) => {
