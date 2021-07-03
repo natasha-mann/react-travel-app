@@ -8,6 +8,8 @@ const SearchForm = (props) => {
             type="text"
             className="form-control"
             placeholder={props.placeholder}
+            onChange={props.onChange}
+            value={props.value}
           />
           <button
             className="btn btn-outline-secondary search-btn"

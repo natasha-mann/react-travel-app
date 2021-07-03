@@ -6,11 +6,20 @@ import { Component } from "react";
 class App extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      countryName: "",
+    };
   }
 
   onSubmit = (event) => {
     event.preventDefault();
-    console.log("click");
+  };
+
+  onChange = (event) => {
+    this.setState({
+      countryName: event.target.value,
+    });
   };
 
   render() {
@@ -29,6 +38,8 @@ class App extends Component {
           text="Where would you like to go?"
           placeholder="Enter a country"
           onSubmit={this.onSubmit}
+          onChange={this.onChange}
+          value={this.state.countryName}
         />
       </div>
     );
