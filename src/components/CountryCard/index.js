@@ -14,7 +14,7 @@ const CountryCard = ({ data }) => {
   };
 
   return (
-    <div className="card mx-auto country-card">
+    <div className="card mx-auto country-card my-3">
       <img src={flag} className="card-img-top" alt={name} />
       <div className="card-body">
         <h5 className="card-title text-center pb-2">{name}</h5>
