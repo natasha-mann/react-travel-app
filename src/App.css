@@ -38,5 +38,9 @@
 }
 
 .card-img-top {
-  max-height: 30vh !important;
+  min-height: 30vh !important;
+}
+
+.current-card {
+  background-color: var(--light-cornflower-blue) !important;
 }

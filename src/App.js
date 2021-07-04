@@ -84,7 +84,7 @@ class App extends Component {
     const params = {
       q: cityName,
       units: "metric",
-      appid: "60b4fb66103f9e3c6f93920a7d7f1377",
+      appid: "785940357963f0488e126bd41a8d1e5c",
     };
 
     const { data, error } = await fetchData(
@@ -122,9 +122,7 @@ class App extends Component {
 
     await this.getHealthData();
 
-    if (this.state.countryData) {
-      await this.getWeatherData(this.state.countryData[0].capital);
-    }
+    await this.getWeatherData(this.state.countryData[0].capital);
   };
 
   onChange = (event) => {
@@ -132,59 +130,6 @@ class App extends Component {
       countryName: event.target.value,
     });
   };
-
-  // renderCountryCard() {
-  //   const { countryData, countryDataError, isLoadingCountryData } = this.state;
-
-  //   if (countryData && !isLoadingCountryData && !countryDataError) {
-  //     return <CountryCard data={countryData} />;
-  //   } else if (!countryData && !isLoadingCountryData && countryDataError) {
-  //     return <ErrorCard message={countryDataError} />;
-  //   } else if (isLoadingCountryData) {
-  //     return <LoadingSpinner />;
-  //   }
-  // }
-
-  // renderHealthCard() {
-  //   const { countryData, healthData, healthDataError, isLoadingHealthData } =
-  //     this.state;
-
-  //   if (healthData && !isLoadingHealthData && !healthDataError) {
-  //     return <HealthCard />;
-  //   } else if (
-  //     // !countryData &&
-  //     !healthData &&
-  //     !isLoadingHealthData &&
-  //     healthDataError
-  //   ) {
-  //     return <ErrorCard message={healthDataError} />;
-  //   } else if (isLoadingHealthData) {
-  //     return <LoadingSpinner />;
-  //   }
-  // }
-
-  // renderWeatherCard() {
-  //   const { countryData, weatherData, weatherDataError, isLoadingWeatherData } =
-  //     this.state;
-
-  //   if (
-  //     // countryData &&
-  //     weatherData &&
-  //     !isLoadingWeatherData &&
-  //     !weatherDataError
-  //   ) {
-  //     return <WeatherCard />;
-  //   } else if (
-  //     // !countryData &&
-  //     !weatherData &&
-  //     !isLoadingWeatherData &&
-  //     weatherDataError
-  //   ) {
-  //     return <ErrorCard message={weatherDataError} />;
-  //   } else if (isLoadingWeatherData) {
-  //     return <LoadingSpinner />;
-  //   }
-  // }
 
   renderCurrentCard() {
     const {
@@ -206,16 +151,17 @@ class App extends Component {
     ) {
       return (
         <div className="row main g-0">
-          <div className="border col-sm-12 col-md-4">
+          <div className=" col-sm-12 col-md-4">
             <SearchForm
               className="p-3"
               placeholder="Enter a country"
               onSubmit={this.onSubmit}
               onChange={this.onChange}
+              value={this.state.countryName}
             />
             <CountryCard data={countryData} />
           </div>
-          <div className="border col-sm-12 col-md-8">
+          <div className=" col-sm-12 col-md-8">
             <WeatherCard data={weatherData} />
             <HealthCard data={healthData} />
           </div>
@@ -256,7 +202,7 @@ class App extends Component {
 
         {this.isLoading && <LoadingSpinner />}
 
-        {!this.state.firstSearch && this.renderCurrentCard()}
+        {this.renderCurrentCard()}
       </div>
     );
   }
