@@ -21,11 +21,9 @@ class App extends Component {
       healthData: null,
       weatherData: null,
       countryDataError: null,
-      travelDataError: null,
+      healthDataError: null,
       weatherDataError: null,
-      isLoadingCountryData: false,
-      isLoadingHealthData: false,
-      isLoadingWeatherData: false,
+      isLoading: false,
       firstSearch: true,
     };
   }
@@ -39,7 +37,7 @@ class App extends Component {
       this.setState({
         countryData: data,
         countryDataError: null,
-        // isLoadingCountryData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -48,7 +46,7 @@ class App extends Component {
       this.setState({
         countryDataError: error,
         countryData: null,
-        isLoadingCountryData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -67,7 +65,7 @@ class App extends Component {
       this.setState({
         healthData: data,
         healthDataError: null,
-        isLoadingHealthData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -76,7 +74,7 @@ class App extends Component {
       this.setState({
         healthDataError: error,
         healthData: null,
-        isLoadingHealthData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -86,7 +84,7 @@ class App extends Component {
     const params = {
       q: cityName,
       units: "metric",
-      appid: "60b4fb66103f9e3c6f93920a7d7f1377",
+      appid: "785940357963f0488e126bd41a8d1e5c",
     };
 
     const { data, error } = await fetchData(
@@ -98,7 +96,7 @@ class App extends Component {
       this.setState({
         weatherData: data,
         weatherDataError: null,
-        isLoadingWeatherData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -107,7 +105,7 @@ class App extends Component {
       this.setState({
         weatherDataError: error,
         weatherData: null,
-        isLoadingWeatherData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -122,11 +120,16 @@ class App extends Component {
 
     await this.getCountryData();
 
-    await this.getHealthData();
-
     if (this.state.countryData) {
-      await this.getWeatherData(this.state.countryData[0].capital);
+      const capital = this.state.countryData[0].capital;
+      await this.getWeatherData(capital);
+    } else {
+      this.setState({
+        weatherDataError: "Failed to fetch data",
+      });
     }
+
+    await this.getHealthData();
   };
 
   onChange = (event) => {
@@ -136,38 +139,53 @@ class App extends Component {
   };
 
   renderCountryCard() {
-    const { countryData, countryDataError, isLoadingCountryData } = this.state;
+    const { countryData, countryDataError, isLoading } = this.state;
 
-    if (countryData && !isLoadingCountryData && !countryDataError) {
-      return <CountryCard />;
-    } else if (!countryData && !isLoadingCountryData && countryDataError) {
-      return <ErrorCard message={countryDataError} />;
-    } else if (isLoadingCountryData) {
-      return <LoadingSpinner />;
+    if (countryData && !isLoading && !countryDataError) {
+      return <CountryCard data={countryData} />;
+    } else if (!countryData && !isLoading && countryDataError) {
+      return (
+        <div>
+          <ErrorCard
+            className="alert alert-danger mx-auto w-50"
+            message={countryDataError}
+          />
+        </div>
+      );
     }
   }
 
   renderHealthCard() {
-    const { healthData, healthDataError, isLoadingHealthData } = this.state;
+    const { healthData, healthDataError, isLoading } = this.state;
 
-    if (healthData && !isLoadingHealthData && !healthDataError) {
-      return <HealthCard />;
-    } else if (!healthData && !isLoadingHealthData && healthDataError) {
-      return <ErrorCard message={healthDataError} />;
-    } else if (isLoadingHealthData) {
-      return <LoadingSpinner />;
+    if (healthData && !isLoading && !healthDataError) {
+      return <HealthCard data={healthData} />;
+    } else if (!healthData && !isLoading && healthDataError) {
+      return (
+        <div>
+          <ErrorCard
+            className="alert alert-danger mx-auto w-50"
+            message={healthDataError}
+          />
+        </div>
+      );
     }
   }
 
   renderWeatherCard() {
-    const { weatherData, weatherDataError, isLoadingWeatherData } = this.state;
+    const { weatherData, weatherDataError, isLoading } = this.state;
 
-    if (weatherData && !isLoadingWeatherData && !weatherDataError) {
-      return <WeatherCard />;
-    } else if (!weatherData && !isLoadingWeatherData && weatherDataError) {
-      return <ErrorCard message={weatherDataError} />;
-    } else if (isLoadingWeatherData) {
-      return <LoadingSpinner />;
+    if (weatherData && !isLoading && !weatherDataError) {
+      return <WeatherCard data={weatherData} />;
+    } else if (!weatherData && !isLoading && weatherDataError) {
+      return (
+        <div>
+          <ErrorCard
+            className="alert alert-danger mx-auto w-50"
+            message={weatherDataError}
+          />
+        </div>
+      );
     }
   }
 
@@ -187,20 +205,24 @@ class App extends Component {
           />
         )}
 
+        {!this.state.firstSearch && (
+          <SearchForm
+            className="p-3 w-50 mx-auto"
+            placeholder="Enter a country"
+            onSubmit={this.onSubmit}
+            onChange={this.onChange}
+            value={this.state.countryName}
+          />
+        )}
+
         {this.isLoading && <LoadingSpinner />}
 
         {!this.state.firstSearch && (
           <div className="row main g-0">
-            <div className="border col-sm-12 col-md-4">
-              <SearchForm
-                className="p-3"
-                placeholder="Enter a country"
-                onSubmit={this.onSubmit}
-                onChange={this.onChange}
-              />
+            <div className=" col-sm-12 col-md-4">
               {this.renderCountryCard()}
             </div>
-            <div className="border col-sm-12 col-md-8">
+            <div className=" col-sm-12 col-md-8">
               {this.renderWeatherCard()}
               {this.renderHealthCard()}
             </div>

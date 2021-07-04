@@ -32,3 +32,15 @@
   background-color: var(--blue-green);
   color: white;
 }
+
+.country-card {
+  width: 75%;
+}
+
+.card-img-top {
+  min-height: 30vh !important;
+}
+
+.current-card {
+  background-color: var(--light-cornflower-blue) !important;
+}
