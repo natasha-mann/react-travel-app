@@ -1,9 +1,13 @@
 import "./App.css";
-import Header from "./components/Header";
-import SearchForm from "./components/SearchForm";
 import { Component } from "react";
 
 import fetchData from "./utils/fetchData";
+
+import Header from "./components/Header";
+import SearchForm from "./components/SearchForm";
+import WeatherCard from "./components/WeatherCard";
+import HealthCard from "./components/HealthCard";
+import CountryCard from "./components/CountryCard";
 
 class App extends Component {
   constructor(props) {
@@ -11,11 +15,98 @@ class App extends Component {
 
     this.state = {
       countryName: "",
-      data: null,
-      error: null,
+      countryData: null,
+      travelData: null,
+      weatherData: null,
+      countryDataError: null,
+      travelDataError: null,
+      weatherDataError: null,
       isLoading: false,
       firstSearch: true,
     };
+  }
+
+  async getCountryData() {
+    const { data, error } = await fetchData(
+      `https://restcountries.eu/rest/v2/name/${this.state.countryName}`
+    );
+
+    if (data) {
+      this.setState({
+        countryData: data,
+        countryDataError: null,
+        isLoading: false,
+        firstSearch: false,
+      });
+    }
+
+    if (error) {
+      this.setState({
+        countryDataError: error,
+        countryData: null,
+        isLoading: false,
+        firstSearch: false,
+      });
+    }
+  }
+
+  async getTravelData() {
+    const params = {
+      format: "json",
+    };
+    const { data, error } = await fetchData(
+      `https://travelbriefing.org/${this.state.countryName}`,
+      params
+    );
+
+    if (data) {
+      this.setState({
+        travelData: data,
+        travelDataError: null,
+        isLoading: false,
+        firstSearch: false,
+      });
+    }
+
+    if (error) {
+      this.setState({
+        travelDataError: error,
+        travelData: null,
+        isLoading: false,
+        firstSearch: false,
+      });
+    }
+  }
+
+  async getWeatherData(cityName) {
+    const params = {
+      q: cityName,
+      units: "metric",
+      appid: "60b4fb66103f9e3c6f93920a7d7f1377",
+    };
+
+    const { data, error } = await fetchData(
+      "http://api.openweathermap.org/data/2.5/weather",
+      params
+    );
+
+    if (data) {
+      this.setState({
+        weatherData: data,
+        weatherDataError: null,
+        isLoading: false,
+        firstSearch: false,
+      });
+    }
+
+    if (error) {
+      this.setState({
+        weatherDataError: error,
+        weatherData: null,
+        isLoading: false,
+        firstSearch: false,
+      });
+    }
   }
 
   onSubmit = async (event) => {
@@ -25,27 +116,13 @@ class App extends Component {
       isLoading: true,
     });
 
-    const { data, error } = await fetchData(
-      `https://restcountries.eu/rest/v2/name/${this.state.countryName}`
-    );
+    await this.getCountryData();
 
-    if (data) {
-      this.setState({
-        data,
-        error: null,
-        isLoading: false,
-        firstSearch: false,
-      });
-    }
+    await this.getTravelData();
 
-    if (error) {
-      this.setState({
-        error,
-        data: null,
-        isLoading: false,
-        firstSearch: false,
-      });
-    }
+    await this.getWeatherData(this.state.countryData[0].capital);
+
+    console.log(this.state.weatherData);
   };
 
   onChange = (event) => {
@@ -55,9 +132,25 @@ class App extends Component {
   };
 
   renderCurrentCard() {
-    const { data, error, isLoading } = this.state;
+    const {
+      countryData,
+      travelData,
+      weatherData,
+      countryDataError,
+      travelDataError,
+      weatherDataError,
+      isLoading,
+    } = this.state;
 
-    if (data && !isLoading && !error) {
+    if (
+      countryData &&
+      travelData &&
+      weatherData &&
+      !isLoading &&
+      !countryDataError &&
+      !travelDataError &&
+      !weatherDataError
+    ) {
       return (
         <div className="row main g-0">
           <div className="border col-sm-12 col-md-4">
@@ -67,15 +160,23 @@ class App extends Component {
               onSubmit={this.onSubmit}
               onChange={this.onChange}
             />
-            <div>Country Card</div>
+            <CountryCard />
           </div>
           <div className="border col-sm-12 col-md-8">
-            <div className="border weather">Weather Card</div>
-            <div className="border health">Health Card</div>
+            <WeatherCard />
+            <HealthCard />
           </div>
         </div>
       );
-    } else if (!data && !isLoading && error) {
+    } else if (
+      (!countryData &&
+        !travelData &&
+        !weatherData &&
+        !isLoading &&
+        countryDataError,
+      travelDataError,
+      weatherDataError)
+    ) {
       // return <ErrorCard message={error} />;
       return <div>Error</div>;
     } else if (isLoading) {
