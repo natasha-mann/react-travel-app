@@ -21,11 +21,9 @@ class App extends Component {
       healthData: null,
       weatherData: null,
       countryDataError: null,
-      travelDataError: null,
+      healthDataError: null,
       weatherDataError: null,
-      isLoadingCountryData: false,
-      isLoadingHealthData: false,
-      isLoadingWeatherData: false,
+      isLoading: false,
       firstSearch: true,
     };
   }
@@ -39,7 +37,7 @@ class App extends Component {
       this.setState({
         countryData: data,
         countryDataError: null,
-        // isLoadingCountryData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -48,7 +46,7 @@ class App extends Component {
       this.setState({
         countryDataError: error,
         countryData: null,
-        isLoadingCountryData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -67,7 +65,7 @@ class App extends Component {
       this.setState({
         healthData: data,
         healthDataError: null,
-        isLoadingHealthData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -76,7 +74,7 @@ class App extends Component {
       this.setState({
         healthDataError: error,
         healthData: null,
-        isLoadingHealthData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -98,7 +96,7 @@ class App extends Component {
       this.setState({
         weatherData: data,
         weatherDataError: null,
-        isLoadingWeatherData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -107,7 +105,7 @@ class App extends Component {
       this.setState({
         weatherDataError: error,
         weatherData: null,
-        isLoadingWeatherData: false,
+        isLoading: false,
         firstSearch: false,
       });
     }
@@ -135,38 +133,107 @@ class App extends Component {
     });
   };
 
-  renderCountryCard() {
-    const { countryData, countryDataError, isLoadingCountryData } = this.state;
+  // renderCountryCard() {
+  //   const { countryData, countryDataError, isLoadingCountryData } = this.state;
 
-    if (countryData && !isLoadingCountryData && !countryDataError) {
-      return <CountryCard />;
-    } else if (!countryData && !isLoadingCountryData && countryDataError) {
-      return <ErrorCard message={countryDataError} />;
-    } else if (isLoadingCountryData) {
-      return <LoadingSpinner />;
-    }
-  }
+  //   if (countryData && !isLoadingCountryData && !countryDataError) {
+  //     return <CountryCard data={countryData} />;
+  //   } else if (!countryData && !isLoadingCountryData && countryDataError) {
+  //     return <ErrorCard message={countryDataError} />;
+  //   } else if (isLoadingCountryData) {
+  //     return <LoadingSpinner />;
+  //   }
+  // }
 
-  renderHealthCard() {
-    const { healthData, healthDataError, isLoadingHealthData } = this.state;
+  // renderHealthCard() {
+  //   const { countryData, healthData, healthDataError, isLoadingHealthData } =
+  //     this.state;
 
-    if (healthData && !isLoadingHealthData && !healthDataError) {
-      return <HealthCard />;
-    } else if (!healthData && !isLoadingHealthData && healthDataError) {
-      return <ErrorCard message={healthDataError} />;
-    } else if (isLoadingHealthData) {
-      return <LoadingSpinner />;
-    }
-  }
+  //   if (healthData && !isLoadingHealthData && !healthDataError) {
+  //     return <HealthCard />;
+  //   } else if (
+  //     // !countryData &&
+  //     !healthData &&
+  //     !isLoadingHealthData &&
+  //     healthDataError
+  //   ) {
+  //     return <ErrorCard message={healthDataError} />;
+  //   } else if (isLoadingHealthData) {
+  //     return <LoadingSpinner />;
+  //   }
+  // }
 
-  renderWeatherCard() {
-    const { weatherData, weatherDataError, isLoadingWeatherData } = this.state;
+  // renderWeatherCard() {
+  //   const { countryData, weatherData, weatherDataError, isLoadingWeatherData } =
+  //     this.state;
 
-    if (weatherData && !isLoadingWeatherData && !weatherDataError) {
-      return <WeatherCard />;
-    } else if (!weatherData && !isLoadingWeatherData && weatherDataError) {
-      return <ErrorCard message={weatherDataError} />;
-    } else if (isLoadingWeatherData) {
+  //   if (
+  //     // countryData &&
+  //     weatherData &&
+  //     !isLoadingWeatherData &&
+  //     !weatherDataError
+  //   ) {
+  //     return <WeatherCard />;
+  //   } else if (
+  //     // !countryData &&
+  //     !weatherData &&
+  //     !isLoadingWeatherData &&
+  //     weatherDataError
+  //   ) {
+  //     return <ErrorCard message={weatherDataError} />;
+  //   } else if (isLoadingWeatherData) {
+  //     return <LoadingSpinner />;
+  //   }
+  // }
+
+  renderCurrentCard() {
+    const {
+      countryData,
+      weatherData,
+      healthData,
+      countryDataError,
+      healthDataError,
+      weatherDataError,
+      isLoading,
+    } = this.state;
+
+    if (
+      countryData &&
+      !isLoading &&
+      !countryDataError &&
+      !healthDataError &&
+      !weatherDataError
+    ) {
+      return (
+        <div className="row main g-0">
+          <div className="border col-sm-12 col-md-4">
+            <SearchForm
+              className="p-3"
+              placeholder="Enter a country"
+              onSubmit={this.onSubmit}
+              onChange={this.onChange}
+            />
+            <CountryCard data={countryData} />
+          </div>
+          <div className="border col-sm-12 col-md-8">
+            <WeatherCard data={weatherData} />
+            <HealthCard data={healthData} />
+          </div>
+        </div>
+      );
+    } else if (!countryData && !isLoading && countryDataError) {
+      return (
+        <div>
+          <ErrorCard message={countryDataError} />
+          <SearchForm
+            className="p-3"
+            placeholder="Enter a country"
+            onSubmit={this.onSubmit}
+            onChange={this.onChange}
+          />
+        </div>
+      );
+    } else if (isLoading) {
       return <LoadingSpinner />;
     }
   }
@@ -189,23 +256,7 @@ class App extends Component {
 
         {this.isLoading && <LoadingSpinner />}
 
-        {!this.state.firstSearch && (
-          <div className="row main g-0">
-            <div className="border col-sm-12 col-md-4">
-              <SearchForm
-                className="p-3"
-                placeholder="Enter a country"
-                onSubmit={this.onSubmit}
-                onChange={this.onChange}
-              />
-              {this.renderCountryCard()}
-            </div>
-            <div className="border col-sm-12 col-md-8">
-              {this.renderWeatherCard()}
-              {this.renderHealthCard()}
-            </div>
-          </div>
-        )}
+        {!this.state.firstSearch && this.renderCurrentCard()}
       </div>
     );
   }
