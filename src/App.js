@@ -8,6 +8,8 @@ import SearchForm from "./components/SearchForm";
 import WeatherCard from "./components/WeatherCard";
 import HealthCard from "./components/HealthCard";
 import CountryCard from "./components/CountryCard";
+import LoadingSpinner from "./components/LoadingSpinner";
+import ErrorCard from "./components/ErrorCard";
 
 class App extends Component {
   constructor(props) {
@@ -16,12 +18,14 @@ class App extends Component {
     this.state = {
       countryName: "",
       countryData: null,
-      travelData: null,
+      healthData: null,
       weatherData: null,
       countryDataError: null,
       travelDataError: null,
       weatherDataError: null,
-      isLoading: false,
+      isLoadingCountryData: false,
+      isLoadingHealthData: false,
+      isLoadingWeatherData: false,
       firstSearch: true,
     };
   }
@@ -35,7 +39,7 @@ class App extends Component {
       this.setState({
         countryData: data,
         countryDataError: null,
-        isLoading: false,
+        // isLoadingCountryData: false,
         firstSearch: false,
       });
     }
@@ -44,13 +48,13 @@ class App extends Component {
       this.setState({
         countryDataError: error,
         countryData: null,
-        isLoading: false,
+        isLoadingCountryData: false,
         firstSearch: false,
       });
     }
   }
 
-  async getTravelData() {
+  async getHealthData() {
     const params = {
       format: "json",
     };
@@ -61,18 +65,18 @@ class App extends Component {
 
     if (data) {
       this.setState({
-        travelData: data,
-        travelDataError: null,
-        isLoading: false,
+        healthData: data,
+        healthDataError: null,
+        isLoadingHealthData: false,
         firstSearch: false,
       });
     }
 
     if (error) {
       this.setState({
-        travelDataError: error,
-        travelData: null,
-        isLoading: false,
+        healthDataError: error,
+        healthData: null,
+        isLoadingHealthData: false,
         firstSearch: false,
       });
     }
@@ -94,7 +98,7 @@ class App extends Component {
       this.setState({
         weatherData: data,
         weatherDataError: null,
-        isLoading: false,
+        isLoadingWeatherData: false,
         firstSearch: false,
       });
     }
@@ -103,7 +107,7 @@ class App extends Component {
       this.setState({
         weatherDataError: error,
         weatherData: null,
-        isLoading: false,
+        isLoadingWeatherData: false,
         firstSearch: false,
       });
     }
@@ -118,11 +122,11 @@ class App extends Component {
 
     await this.getCountryData();
 
-    await this.getTravelData();
+    await this.getHealthData();
 
-    await this.getWeatherData(this.state.countryData[0].capital);
-
-    console.log(this.state.weatherData);
+    if (this.state.countryData) {
+      await this.getWeatherData(this.state.countryData[0].capital);
+    }
   };
 
   onChange = (event) => {
@@ -131,57 +135,39 @@ class App extends Component {
     });
   };
 
-  renderCurrentCard() {
-    const {
-      countryData,
-      travelData,
-      weatherData,
-      countryDataError,
-      travelDataError,
-      weatherDataError,
-      isLoading,
-    } = this.state;
+  renderCountryCard() {
+    const { countryData, countryDataError, isLoadingCountryData } = this.state;
 
-    if (
-      countryData &&
-      travelData &&
-      weatherData &&
-      !isLoading &&
-      !countryDataError &&
-      !travelDataError &&
-      !weatherDataError
-    ) {
-      return (
-        <div className="row main g-0">
-          <div className="border col-sm-12 col-md-4">
-            <SearchForm
-              className="p-3"
-              placeholder="Enter a country"
-              onSubmit={this.onSubmit}
-              onChange={this.onChange}
-            />
-            <CountryCard />
-          </div>
-          <div className="border col-sm-12 col-md-8">
-            <WeatherCard />
-            <HealthCard />
-          </div>
-        </div>
-      );
-    } else if (
-      (!countryData &&
-        !travelData &&
-        !weatherData &&
-        !isLoading &&
-        countryDataError,
-      travelDataError,
-      weatherDataError)
-    ) {
-      // return <ErrorCard message={error} />;
-      return <div>Error</div>;
-    } else if (isLoading) {
-      // return <LoadingSpinner />;
-      return <div>Loading</div>;
+    if (countryData && !isLoadingCountryData && !countryDataError) {
+      return <CountryCard />;
+    } else if (!countryData && !isLoadingCountryData && countryDataError) {
+      return <ErrorCard message={countryDataError} />;
+    } else if (isLoadingCountryData) {
+      return <LoadingSpinner />;
+    }
+  }
+
+  renderHealthCard() {
+    const { healthData, healthDataError, isLoadingHealthData } = this.state;
+
+    if (healthData && !isLoadingHealthData && !healthDataError) {
+      return <HealthCard />;
+    } else if (!healthData && !isLoadingHealthData && healthDataError) {
+      return <ErrorCard message={healthDataError} />;
+    } else if (isLoadingHealthData) {
+      return <LoadingSpinner />;
+    }
+  }
+
+  renderWeatherCard() {
+    const { weatherData, weatherDataError, isLoadingWeatherData } = this.state;
+
+    if (weatherData && !isLoadingWeatherData && !weatherDataError) {
+      return <WeatherCard />;
+    } else if (!weatherData && !isLoadingWeatherData && weatherDataError) {
+      return <ErrorCard message={weatherDataError} />;
+    } else if (isLoadingWeatherData) {
+      return <LoadingSpinner />;
     }
   }
 
@@ -201,7 +187,25 @@ class App extends Component {
           />
         )}
 
-        {this.renderCurrentCard()}
+        {this.isLoading && <LoadingSpinner />}
+
+        {!this.state.firstSearch && (
+          <div className="row main g-0">
+            <div className="border col-sm-12 col-md-4">
+              <SearchForm
+                className="p-3"
+                placeholder="Enter a country"
+                onSubmit={this.onSubmit}
+                onChange={this.onChange}
+              />
+              {this.renderCountryCard()}
+            </div>
+            <div className="border col-sm-12 col-md-8">
+              {this.renderWeatherCard()}
+              {this.renderHealthCard()}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
