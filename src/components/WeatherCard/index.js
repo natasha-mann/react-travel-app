@@ -3,7 +3,7 @@ const WeatherCard = ({ data }) => {
     new Date(dateString * 1000).toLocaleDateString("en-UK");
 
   return (
-    <div className="card text-center bg-transparent px-4 py-3 shadow-lg current-card">
+    <div className="card text-center bg-transparent px-4 py-3 me-4 mb-3 shadow-lg current-card">
       <h4 className="current-city pt-2" id="cityName">
         {data.name}
         <span id="currentDate">- {convertDateTime(data.dt)}</span>

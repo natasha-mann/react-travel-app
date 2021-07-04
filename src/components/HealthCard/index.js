@@ -15,7 +15,7 @@ const HealthCard = ({ data }) => {
   };
 
   return (
-    <div className="card my-2">
+    <div className="card me-4 my-2">
       <div className="card-header text-center fs-2">
         Health and Vaccines for {data.names.name}
       </div>
