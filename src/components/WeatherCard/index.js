@@ -1,4 +1,5 @@
 const WeatherCard = ({ data }) => {
+  console.log("weather", data);
   const convertDateTime = (dateString) =>
     new Date(dateString * 1000).toLocaleDateString("en-UK");
 

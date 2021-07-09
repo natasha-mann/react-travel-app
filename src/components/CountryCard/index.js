@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 const CountryCard = ({ data }) => {
+  console.log("country", data);
   const { name, capital, region, languages, flag } = data[0];
 
   const languageListItems = (languages) => {

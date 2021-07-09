@@ -1,4 +1,5 @@
 const HealthCard = ({ data }) => {
+  console.log("health", data);
   const vaccineData = (vaccinations) => {
     if (vaccinations.length !== 0) {
       return vaccinations.map((vaccination) => {

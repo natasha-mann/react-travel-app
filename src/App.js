@@ -23,7 +23,9 @@ class App extends Component {
       countryDataError: null,
       healthDataError: null,
       weatherDataError: null,
-      isLoading: false,
+      isLoadingCountry: true,
+      isLoadingHealth: true,
+      isLoadingWeather: true,
       firstSearch: true,
     };
   }
@@ -37,7 +39,7 @@ class App extends Component {
       this.setState({
         countryData: data,
         countryDataError: null,
-        isLoading: false,
+        isLoadingCountry: false,
         firstSearch: false,
       });
     }
@@ -46,7 +48,7 @@ class App extends Component {
       this.setState({
         countryDataError: error,
         countryData: null,
-        isLoading: false,
+        isLoadingCountry: false,
         firstSearch: false,
       });
     }
@@ -65,7 +67,7 @@ class App extends Component {
       this.setState({
         healthData: data,
         healthDataError: null,
-        isLoading: false,
+        isLoadingHealth: false,
         firstSearch: false,
       });
     }
@@ -74,7 +76,7 @@ class App extends Component {
       this.setState({
         healthDataError: error,
         healthData: null,
-        isLoading: false,
+        isLoadingHealth: false,
         firstSearch: false,
       });
     }
@@ -96,7 +98,7 @@ class App extends Component {
       this.setState({
         weatherData: data,
         weatherDataError: null,
-        isLoading: false,
+        isLoadingWeather: false,
         firstSearch: false,
       });
     }
@@ -105,7 +107,7 @@ class App extends Component {
       this.setState({
         weatherDataError: error,
         weatherData: null,
-        isLoading: false,
+        isLoadingWeather: false,
         firstSearch: false,
       });
     }
@@ -139,11 +141,13 @@ class App extends Component {
   };
 
   renderCountryCard() {
-    const { countryData, countryDataError, isLoading } = this.state;
+    const { countryData, countryDataError, isLoadingCountry } = this.state;
 
-    if (countryData && !isLoading && !countryDataError) {
+    if (countryData && !isLoadingCountry && !countryDataError) {
       return <CountryCard data={countryData} />;
-    } else if (!countryData && !isLoading && countryDataError) {
+    } else if (countryData && isLoadingCountry && !countryDataError) {
+      return <LoadingSpinner />;
+    } else if (!countryData && !isLoadingCountry && countryDataError) {
       return (
         <div>
           <ErrorCard
@@ -156,11 +160,13 @@ class App extends Component {
   }
 
   renderHealthCard() {
-    const { healthData, healthDataError, isLoading } = this.state;
+    const { healthData, healthDataError, isLoadingHealth } = this.state;
 
-    if (healthData && !isLoading && !healthDataError) {
+    if (healthData && !isLoadingHealth && !healthDataError) {
       return <HealthCard data={healthData} />;
-    } else if (!healthData && !isLoading && healthDataError) {
+    } else if (healthData && isLoadingHealth && !healthDataError) {
+      return <LoadingSpinner />;
+    } else if (!healthData && !isLoadingHealth && healthDataError) {
       return (
         <div>
           <ErrorCard
@@ -173,11 +179,13 @@ class App extends Component {
   }
 
   renderWeatherCard() {
-    const { weatherData, weatherDataError, isLoading } = this.state;
+    const { weatherData, weatherDataError, isLoadingWeather } = this.state;
 
-    if (weatherData && !isLoading && !weatherDataError) {
+    if (weatherData && !isLoadingWeather && !weatherDataError) {
       return <WeatherCard data={weatherData} />;
-    } else if (!weatherData && !isLoading && weatherDataError) {
+    } else if (weatherData && isLoadingWeather && !weatherDataError) {
+      return <LoadingSpinner />;
+    } else if (!weatherData && !isLoadingWeather && weatherDataError) {
       return (
         <div>
           <ErrorCard
@@ -222,7 +230,7 @@ class App extends Component {
             <div className=" col-sm-12 col-md-4">
               {this.renderCountryCard()}
             </div>
-            <div className=" col-sm-12 col-md-8">
+            <div className="justify-content-center col-sm-12 col-md-8">
               {this.renderWeatherCard()}
               {this.renderHealthCard()}
             </div>
