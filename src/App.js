@@ -116,10 +116,6 @@ class App extends Component {
   onSubmit = async (event) => {
     event.preventDefault();
 
-    this.setState({
-      isLoading: true,
-    });
-
     await this.getCountryData();
 
     if (this.state.countryData) {
@@ -145,7 +141,7 @@ class App extends Component {
 
     if (countryData && !isLoadingCountry && !countryDataError) {
       return <CountryCard data={countryData} />;
-    } else if (countryData && isLoadingCountry && !countryDataError) {
+    } else if (!countryData && isLoadingCountry && !countryDataError) {
       return <LoadingSpinner />;
     } else if (!countryData && !isLoadingCountry && countryDataError) {
       return (
@@ -164,7 +160,7 @@ class App extends Component {
 
     if (healthData && !isLoadingHealth && !healthDataError) {
       return <HealthCard data={healthData} />;
-    } else if (healthData && isLoadingHealth && !healthDataError) {
+    } else if (!healthData && isLoadingHealth && !healthDataError) {
       return <LoadingSpinner />;
     } else if (!healthData && !isLoadingHealth && healthDataError) {
       return (
@@ -183,7 +179,7 @@ class App extends Component {
 
     if (weatherData && !isLoadingWeather && !weatherDataError) {
       return <WeatherCard data={weatherData} />;
-    } else if (weatherData && isLoadingWeather && !weatherDataError) {
+    } else if (!weatherData && isLoadingWeather && !weatherDataError) {
       return <LoadingSpinner />;
     } else if (!weatherData && !isLoadingWeather && weatherDataError) {
       return (
